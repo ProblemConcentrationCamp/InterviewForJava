@@ -68,7 +68,8 @@ static final class TreeNode<K,V> extends LinkedHashMap.Entry<K,V> {
 }
 ```
 
-通过 Node 和 TreeNode 我们可以知道，HashMap 的数据是存在 table 数组里面， 这个数组的类型是 Node, 而 Node 的实现可以为 Node 本身, 也就是链表 和 TreeNode 红黑树。
+通过 Node 和 TreeNode 我们可以知道，HashMap 的数据是存在 table 数组里面， 这个数组的类型是 Node,
+而 Node 的实现可以为 Node 本身, 也就是链表 和 TreeNode 红黑树。
 
 ## 2. HashMap 中几个比较重要的属性介绍
 ```java
@@ -119,7 +120,8 @@ public class HashMap<K,V> {
 
 > 1.HashMap 的 table 的数组的长度必须是 2 的 n 次方。
 
-> 2.我们往 HashMap 中存入一个 <key, value> 时，是存在 table 数组的，但是不是默认往最后一位添加，而是通过存进去的 key 的 hash 值模于 table 的长度, 得到他在 table 的位置。
+> 2.我们往 HashMap 中存入一个 <key, value> 时，是存在 table 数组的，但是不是默认往最后一位添加，而是通过存进去的 key 
+的 hash 值模于 table 的长度, 得到他在 table 的位置。
 
 >> 2.1通过 key 获取到 对应的 hash 值
 ```java
@@ -128,7 +130,8 @@ static final int hash(Object key) {
     int h;
     // 1. 如果 key 为 null 时， 直接返回 0, 也就是 HashMap 允许存放 key 为 null 的情况
     // 2. 如果 key 不为 null 的话， 先取到 key 的 hashCode, 然后把 hashCode 无符号右移16位后，在和原来的hashCode异或
-    // 3. 第 2 步叫做 扰乱，作用是把 key 的 hashCode 的高位也进入运算，减少 hash 值相同的情况，也就是减少后续通过 hash 值计算这个 key 在 table 的位置，减少了 hash 冲突
+    // 3. 第 2 步叫做 扰乱，作用是把 key 的 hashCode 的高位也进入运算，减少 hash 值相同的情况，也就是减少后续通过 hash 
+    // 值计算这个 key 在 table 的位置，减少了 hash 冲突
     return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
 }
 ```
@@ -141,7 +144,9 @@ int n = table.length;
 
 // 1. pos就是在 table 的位置, 将 table 的长度 - 1 后, 再和 key 的 hash 值进行与运算
 // 2. 一般情况下, 我们知道了 key 值的 hash 值，和 table 的长度，那么 key 在 table 位置就可以直接通过 hash % table 就能知道他的位置了。
-// 3. 但是模运算是一个耗时的操作，直接可以通过位运算替代模运算，同时达到相关的效果就好了，也就是  a % b == a 位运算 b, 后面观察发现  a & (2^n - 1) 的效果和 a % (2^n - 1)[a,n 都是正整数], 所以对 table的长度做了限制，限制为 2 的 n 次方, 这样就能通过位运算直接获取 key 在 table 的位置。
+// 3. 但是模运算是一个耗时的操作，直接可以通过位运算替代模运算，同时达到相关的效果就好了，也就是  a % b == a 位运算 b,
+// 后面观察发现  a & (2^n - 1) 的效果和 a % (2^n - 1)[a,n 都是正整数], 所以对 table的长度做了限制，限制为 2 的 n 次方, 
+// 这样就能通过位运算直接获取 key 在 table 的位置。
 int pos = (n - 1) & hash;
 ```
 
@@ -281,10 +286,110 @@ public class HashMap {
 
     }
 
+```
+## 6. HashMap.get 方法
+```java
+/**
+ * 通过 key 获取value, 如果 节点为null, 返回nulL
+ */
+public V get(Object key) {
+    Node<K,V> e;
+    return (e = getNode(hash(key), key)) == null ? null : e.value;
+}
+
+
+
+final Node<K,V> getNode(int hash, Object key) {
+
+    Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
+
+    // 数组不为空，长度大于 0 ， 定位到的位置的链表的第一个节点 不为 null
+    if ((tab = table) != null && (n = tab.length) > 0 &&
+            (first = tab[(n - 1) & hash]) != null) {
+
+        // 第一个节点 符合条件了, 直接返回        
+        if (first.hash == hash && ((k = first.key) == key || (key != null && key.equals(k))))
+            return first;   
+
+        if ((e = first.next) != null) {
+            if (first instanceof TreeNode) 
+                // 树节点, 调用 树的操作
+               return ((TreeNode<K,V>)first).getTreeNode(hash, key);
+
+            do {
+                // 遍历 链表的其他节点, 找到符合条件的，直接返回
+                if (e.hash == hash && ((k = e.key) == key || (key != null && key.equals(k))))
+                    return e;
+            } while ((e = e.next) != null);   
+        }
+    }
+    return null;
+}
+```
+
+## 7. HashMap.remove 方法
+```java
+public V remove(Object key) {
+
+    Node<K,V> e;
+    return (e = removeNode(hash(key), key, null, false, true)) == null ? null : e.value;
+
+}
+/**
+ * 删除节点
+ * matchValue : 为 true，找到了节点，还会比较他们的值，值相同才会删除
+ * movable : 为false, 当节点删除了, 不改变其他节点的位置
+ */
+final Node<K,V> removeNode(int hash, Object key, Object value, boolean matchValue, boolean movable) {
+
+    Node<K,V>[] tab; Node<K,V> p; int n, index;
+
+    // 数组不为空，长度大于 0 ， 定位到的位置的链表的第一个节点 不为 null
+    if ((tab = table) != null && (n = tab.length) > 0 && (p = tab[index = (n - 1) & hash]) != null) {
+
+        Node<K,V> node = null, e; K k; V v;
+        // 链表的头部就是需要删除的节点, 把节点赋给 node
+        if (p.hash == hash &&  ((k = p.key) == key || (key != null && key.equals(k))))
+            node = p;
+        else if ((e = p.next) != null) {
+            // 树节点，通过数找到需要删除的节点
+            if (p instanceof TreeNode)
+                node = ((TreeNode<K,V>)p).getTreeNode(hash, key);
+            else {
+                // 遍历链表 找到需要删除的节点
+                do {
+                    if (e.hash == hash && ((k = e.key) == key || (key != null && key.equals(k)))) {
+                        node = e;
+                        break;
+                    }
+                    p = e;
+                } while ((e = e.next) != null);
+            }  
+        }
+
+        // 需要删除的节点不为空
+        if (node != null && (!matchValue || (v = node.value) == value ||  (value != null && value.equals(v)))) {
+            // 调用树节点的移除方法
+            if (node instanceof TreeNode)
+                ((TreeNode<K,V>)node).removeTreeNode(this, tab, movable);
+            else if (node == p)
+                // 把 链表的头部直接指向了下一个节点
+                tab[index] = node.next;    
+            else
+                // p的下一个节点指向需要删除节点的下一个节点
+                p.next = node.next;
+            ++modCount;
+            --size;
+            afterNodeRemoval(node);
+            return node;
+        }
+    }
+    return null;
+}
 
 ```
 
-## 5. HashMap 的方法块
+## 8. HashMap 的方法块
 
 * `tableSizeFor`
 ```java
@@ -308,8 +413,8 @@ static final int tableSizeFor(int cap) {
 * `resize`
 ```java
 /**
-    * 重新扩容
-    */
+ * 重新扩容
+ */
 final Node<K,V>[] resize() {
 
     Node<K,V>[] oldTab = table;
