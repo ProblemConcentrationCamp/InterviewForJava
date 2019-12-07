@@ -747,7 +747,6 @@ final Node<K,V> removeNode(int hash, Object key, Object value, boolean matchValu
 ## 8. HashMap 相关的一些 面试问题
 
 1. HashMap 的存储过程?
-
 这里可以在细分为 (1)key 的 hash 计算 (2) 通过 key 的 hash 定位到 table 数组的位置 (3) 在table 数组的位置上如何确定这个对象已存在 (4) 存在怎么操作, 不存在是怎么处理 (5) 什么时候进行红黑树化 (6)如何进行扩容(可以分 2 部分进行分析，1: 新的容量和新阈值的计算， 2. 将旧的 HashMap 上的数据移到新的上)  
 2. HashMap 可以存放 null 值吗?  
 3. HashMap的数据结构是什么样子的？  
