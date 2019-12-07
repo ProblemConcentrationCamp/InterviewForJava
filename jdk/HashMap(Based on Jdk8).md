@@ -82,7 +82,7 @@ public class HashMap<K,V> {
     transient Node<K,V>[] table;
 
     /**
-     * 16, 初始时，没有指定容量时，我们 table 的大小， 
+     * 16, 初始时，没有指定容量，我们 table 的大小， 
      */
     static final int DEFAULT_INITIAL_CAPACITY = 1 << 4;
 
@@ -100,17 +100,17 @@ public class HashMap<K,V> {
     static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
     /**
-     * 桶的项从链表变为红黑树的临界点, 项里面的节点
+     * table 的项从链表变为红黑树的临界点, 项里面的节点
      */
     static final int TREEIFY_THRESHOLD = 8;
 
     /**
-     * 桶的项从红黑树重新转为链表的临界点, 项里面的数据节点长度等于 6
+     * table 的项从红黑树重新转为链表的临界点, 项里面的数据节点长度等于 6
      */
     static final int UNTREEIFY_THRESHOLD = 6;
 
     /**
-     * 桶的项从链表变为红黑树的另一个条件, 存储数据的 table 的长度大于 64 了
+     * table 的项从链表变为红黑树的另一个条件, 存储数据的 table 的长度大于 64 了
      */
     static final int MIN_TREEIFY_CAPACITY = 64;
 }
@@ -121,7 +121,7 @@ public class HashMap<K,V> {
 > 1.HashMap 的 table 的数组的长度必须是 2 的 n 次方。
 
 > 2.我们往 HashMap 中存入一个 <key, value> 时，是存在 table 数组的，但是不是默认往最后一位添加，而是通过存进去的 key 
-的 hash 值模于 table 的长度, 得到他在 table 的位置。
+的 hash 值经过计算, 得到他在 table 的位置。
 
 >> 2.1通过 key 获取到 对应的 hash 值
 ```java
@@ -129,9 +129,12 @@ static final int hash(Object key) {
 
     int h;
     // 1. 如果 key 为 null 时， 直接返回 0, 也就是 HashMap 允许存放 key 为 null 的情况
-    // 2. 如果 key 不为 null 的话， 先取到 key 的 hashCode, 然后把 hashCode 无符号右移16位后，在和原来的hashCode异或
-    // 3. 第 2 步叫做 扰乱，作用是把 key 的 hashCode 的高位也进入运算，减少 hash 值相同的情况，也就是减少后续通过 hash 
-    // 值计算这个 key 在 table 的位置，减少了 hash 冲突
+    
+    // 2. 如果 key 不为 null 的话， 先取到 key 的 hashCode, 然后把 hashCode 无符号右移16位后，
+    // 在和原来的hashCode异或
+
+    // 3. 第 2 步叫做 扰乱，作用是把 key 的 hashCode 的高位也进入运算，
+    // 减少 hash 值相同的情况，也就是减少后续通过 hash 值计算这个 key 在 table 的位置，减少了 hash 冲突
     return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
 }
 ```
@@ -143,10 +146,13 @@ static final int hash(Object key) {
 int n = table.length;
 
 // 1. pos就是在 table 的位置, 将 table 的长度 - 1 后, 再和 key 的 hash 值进行与运算
-// 2. 一般情况下, 我们知道了 key 值的 hash 值，和 table 的长度，那么 key 在 table 位置就可以直接通过 hash % table 就能知道他的位置了。
-// 3. 但是模运算是一个耗时的操作，直接可以通过位运算替代模运算，同时达到相关的效果就好了，也就是  a % b == a 位运算 b,
-// 后面观察发现  a & (2^n - 1) 的效果和 a % (2^n - 1)[a,n 都是正整数], 所以对 table的长度做了限制，限制为 2 的 n 次方, 
-// 这样就能通过位运算直接获取 key 在 table 的位置。
+
+// 2. 一般情况下, 我们知道了 key 值的 hash 值，和 table 的长度，那么 key 在 table 位
+// 置就可以直接通过 hash % table 就能知道他的位置了。
+
+// 3. 但是模运算是一个耗时的操作，直接可以通过位运算替代模运算，同时达到相关的效果就好了，也就是  a % b == a 
+//位运算 b,后面观察发现  a & (2^n - 1) 的效果和 a % (2^n - 1)[a,n 都是正整数], 
+// 所以对 table的长度做了限制，限制为 2 的 n 次方, 这样就能通过位运算直接获取 key 在 table 的位置。
 int pos = (n - 1) & hash;
 ```
 
