@@ -1,5 +1,7 @@
 # HashMap (基于 Jdk8 的实现)
 
+学习了一下 HashMap 的内部原理，忽略了红黑树相关的代码。
+
 ## 1. HashMap 的内部的数据结构
 
 ![Alt 'HashMap-DataStructure'](https://s2.ax1x.com/2019/12/07/QtK2Lt.png)
@@ -742,7 +744,19 @@ final Node<K,V> removeNode(int hash, Object key, Object value, boolean matchValu
 }
 ```
 
+## 8. HashMap 相关的一些 面试问题
 
-## 6. 参考 
+1. HashMap 的存储过程?
+
+这里可以在细分为 (1)key 的 hash 计算 (2) 通过 key 的 hash 定位到 table 数组的位置 (3) 在table 数组的位置上如何确定这个对象已存在 (4) 存在怎么操作, 不存在是怎么处理 (5) 什么时候进行红黑树化 (6)如何进行扩容(可以分 2 部分进行分析，1: 新的容量和新阈值的计算， 2. 将旧的 HashMap 上的数据移到新的上)  
+2. HashMap 可以存放 null 值吗?  
+3. HashMap的数据结构是什么样子的？  
+4. HashMap的长度为什么是2的倍数？  
+5. HashMap 和 Hashtable 的区别？
+这个可以从 3 个方面入手: 安全性，效率，能否允许 key, value 为null
+6. hashMap是线程安全的吗？为什么？
+可以通过多个线程同时进行新增进行思考
+
+## 9. 参考 
 
 [Java集合：HashMap详解(JDK 1.8)）](https://blog.csdn.net/v123411739/article/details/78996181)
