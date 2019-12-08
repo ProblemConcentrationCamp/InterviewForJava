@@ -225,7 +225,8 @@ final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {
             putVal(hash(key), key, value, false, evict);
         }    
 
-        // putMapEntries 的方法先到这里，里面设计到的 resize() 扩容和 putVale 存放 value 留在下面 HashMap 的 put方法进行讲解
+        // putMapEntries 的方法先到这里，
+        //里面设计到的 resize() 扩容和 putVale 存放 value 留在下面 HashMap 的 put方法进行讲解
     }
 }
 ```
