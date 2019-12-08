@@ -174,7 +174,7 @@ public class HashMap {
     }
 }
 ```
-* ** tableSizeFor 方法**
+* **tableSizeFor 方法**
 ```java
 /**
  * 返回 第一个大于或者等于 cap 的 2 的 n 次方的数
@@ -193,7 +193,7 @@ static final int tableSizeFor(int cap) {
 }
 ```
 
-* ** putMapEntries 方法 **
+*  **putMapEntries 方法**
 ``` java
 final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {
 
@@ -308,7 +308,7 @@ final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {
     }
 ```
 
-* ** hash 方法**
+* **hash 方法**
 ```java
 static final int hash(Object key) {
 
@@ -343,7 +343,7 @@ int pos(int hash) {
 }
 ```
 
-* ** putVal 方法**
+* **putVal 方法**
 ```java
 /**
  * 存值
@@ -405,7 +405,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {
 ```
 
 
-* ** resize 方法 **
+* **resize 方法**
 ```java
 /**
  * 重新扩容
