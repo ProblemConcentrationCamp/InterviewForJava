@@ -118,33 +118,7 @@ public class HashMap<K,V> {
 }
 ```
 
-## 3. HashMap 中几个设定
-
-> 1.HashMap 的 table 的数组的长度必须是 2 的 n 次方。
-
-> 2.我们往 HashMap 中存入一个 <key, value> 时，是存在 table 数组的，但是不是默认往最后一位添加，而是通过存进去的 key 
-的 hash 值经过计算, 得到他在 table 的位置。
-
-
->> 2.2通过 key 计算出来的 hash, 取到在 table 的位置
-```java
-
-// 取到当前 table 数组的长度
-int n = table.length;
-
-// 1. pos就是在 table 的位置, 将 table 的长度 - 1 后, 再和 key 的 hash 值进行与运算
-
-// 2. 一般情况下, 我们知道了 key 值的 hash 值，和 table 的长度，那么 key 在 table 位
-// 置就可以直接通过 hash % table 就能知道他的位置了。
-
-// 3. 但是模运算是一个耗时的操作，直接可以通过位运算替代模运算，同时达到相关的效果就好了，也就是  a % b == a 
-//位运算 b,后面观察发现  a & (2^n - 1) 的效果和 a % (2^n - 1)[a,n 都是正整数], 
-// 所以对 table的长度做了限制，限制为 2 的 n 次方, 这样就能通过位运算直接获取 key 在 table 的位置。
-int pos = (n - 1) & hash;
-```
-
-
-## 4. HashMap 的创建
+## 3. HashMap 的创建
 
 ```java
 public class HashMap {
@@ -257,7 +231,7 @@ final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {
 ```
 
 
-## 5. HashMap.put 方法
+## 4. HashMap.put 方法
 ```java
 
     public V put(K key, V value) {
@@ -637,7 +611,7 @@ final Node<K,V>[] resize() {
 6)  hash & oldCap = 0 => 当前节点在数组的位置不用变, hash & oldCap != 0 => 当前节点在新数组的 index + oldCap 的位置
 
 
-## 6. HashMap.get 方法
+## 5. HashMap.get 方法
 ```java
 /**
  * 通过 key 获取value, 如果 节点为null, 返回nulL
@@ -681,7 +655,7 @@ final Node<K,V> getNode(int hash, Object key) {
 ```
 
 
-## 7. HashMap.remove 方法
+## 6. HashMap.remove 方法
 ```java
 public V remove(Object key) {
     Node<K,V> e;
@@ -744,10 +718,10 @@ final Node<K,V> removeNode(int hash, Object key, Object value, boolean matchValu
 }
 ```
 
-## 8. HashMap 相关的一些 面试问题
+## 7. HashMap 相关的一些 面试问题
 
 1. HashMap 的存储过程?   
-这里可以在细分为 (1)key 的 hash 计算 (2) 通过 key 的 hash 定位到 table 数组的位置 (3) 在table 数组的位置上如何确定这个对象已存在 (4) 存在怎么操作, 不存在是怎么处理 (5) 什么时候进行红黑树化 (6)如何进行扩容(可以分 2 部分进行分析，1: 新的容量和新阈值的计算， 2. 将旧的 HashMap 上的数据移到新的上)  
+这里可以在细分为 (1)key 的 hash 计算 (2) 通过 key 的 hash 定位到 table 数组的位置 (3) 在table 数组的位置上如何确定这个对象已存在 (4) 存在怎么操作, 不存在是怎么处理 (5) 什么时候进行红黑树化 (6)如何进行扩容( 可以分 2 部分进行分析，1: 新的容量和新阈值的计算， 2. 将旧的 HashMap 上的数据移到新的上 )  
 2. HashMap 可以存放 null 值吗?  
 3. HashMap的数据结构是什么样子的？  
 4. HashMap的长度为什么是2的倍数？阈值为什么默认是 0.75？  
@@ -757,6 +731,6 @@ final Node<K,V> removeNode(int hash, Object key, Object value, boolean matchValu
 可以通过多个线程同时进行新增进行思考
 7. HashMap 内部起作用的2个重要方法 hashCode 和 equals, 可以说一下吗？
 
-## 9. 参考 
+## 8. 参考 
 
 [Java集合：HashMap详解(JDK 1.8)）](https://blog.csdn.net/v123411739/article/details/78996181)
