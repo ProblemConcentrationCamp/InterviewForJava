@@ -188,7 +188,7 @@ static final int tableSizeFor(int cap) {
     n |= n >>> 4;
     n |= n >>> 8;
     n |= n >>> 16;
-    // 做一个容错 如果 cap 是一个 小于等于 0 的数, 经过上面的处理，n 也会是一个小数
+    // 做一个容错 如果 cap 是一个 小于等于 0 的数, 经过上面的处理，n 也会是一个小于 0 的数
     return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
 }
 ```
