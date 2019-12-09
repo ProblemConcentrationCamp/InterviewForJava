@@ -234,79 +234,9 @@ final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {
 
 ## 4. HashMap.put 方法
 ```java
-
-    public V put(K key, V value) {
-        return putVal(hash(key), key, value, false, true);
-    }
-
-    /**
-     * 存值
-     * @ hash 存的 key 的 hash 值
-     * @ key  对象的key
-     * @ value 存的值
-     * @ onlyIfAbsent 存入的节点已在 HashMap 中存在， 是否用新的 value 替代 旧的 value, false进行修改, true不修改
-     * @ evict 这个值用于 LinkedHashMap 在HashMap 中没有作用
-     */
-    final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {
-
-        Node<K,V>[] tab; Node<K,V> p; int n, i;
-
-        // table 为空 或者 table 的长度为 0, 进行扩容, 可以看成第一次存数据的时候
-        if ((tab = table) == null || (n = tab.length) == 0)
-            n = (tab = resize()).length;
-
-        // i = (n - 1 ) & hash 就是求出 这个对象存在 table 的位置, 然后赋值给 i
-        // tab 的 i 位置为 null 的话, 把 数据封装为一个 Node 节点, 放到 tab 的 i 位置
-        if ((p = tab[i = (n - 1) & hash]) == null)
-            tab[i] = newNode(hash, key, value, null);
-        else {
-            Node<K,V> e; K k;
-            // 需要放入的位置的第一个节点 的 hash 和 key 一样，取到这个节点
-            if (p.hash == hash && ((k = p.key) == key || (key != null && key.equals(k))))
-                e = p;
-            else if (p instanceof TreeNode)
-                // 调用红黑树 进行处理
-                e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);    
-            else {
-
-                for (int binCount = 0; ; ++binCount) {
-                    // 从链表的第一个节点开始遍历到尾部
-
-                    // 下一个节点为空, 直接将当前的节点放到尾部
-					if ((e = p.next) == null) {
-                        p.next = newNode(hash, key, value, null);
-                        // 当前链表的节点个数大于了7, 原本有7了, 加上新的节点，达到了8个，进行红黑树树化
-                        if (binCount >= TREEIFY_THRESHOLD - 1)
-                            treeifyBin(tab, hash);
-                        break;    
-                    }
-                    // 链表中有一个节点的 hash 和 key 和要插入的一样，取到这个节点
-                    if (e.hash == hash && ((k = e.key) == key || (key != null && key.equals(k)))) 
-						break;
-                    p = e;    
-
-                }
-
-                if (e != null) {
-                    V oldValue = e.value;      
-                    // 新值 替换旧值
-                    if (!onlyIfAbsent || oldValue == null)
-                        e.value = value; 
-                    // HashMap 中 这个方法为 空方法
-                    afterNodeAccess(e);
-                    return oldValue;                 
-                }
-            }    
-        }
-        // 用于支持 fast-fail 机制
-        ++modCount;
-        // 达到了阈值，进行扩容
-        if (++size > threshold)
-            resize();
-        // HashMap 的这个方法也是空方法 
-        afterNodeInsertion(evict);
-        return null;
-    }
+public V put(K key, V value) {
+    return putVal(hash(key), key, value, false, true);
+}
 ```
 
 * **hash 方法**
@@ -325,7 +255,7 @@ static final int hash(Object key) {
 }
 ```
 
-* ** 这个方法在 HashMap 中是不存在的, 个人定义的，只是为了方便理解 HashMap 是如何通过 hash 知道对象存在数组的哪个位置  **
+* **这个方法在 HashMap 中是不存在的, 个人定义的，只是为了方便理解 HashMap 是如何通过 hash 知道对象存在数组的哪个位置**
 ```java
 
 int pos(int hash) {
@@ -401,8 +331,16 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {
             } 
         }
     }
+    
+    // 用于支持 fast-fail 机制
+    ++modCount;
+    // 达到了阈值，进行扩容
+    if (++size > threshold)
+      resize();
+    // HashMap 的这个方法也是空方法 
+    afterNodeInsertion(evict);
+    return null;
 }
-
 ```
 
 
