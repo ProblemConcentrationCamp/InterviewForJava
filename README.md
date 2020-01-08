@@ -1,2 +1,5 @@
 # InterviewForJava
-interview questions for Java Programmer 
+
+Interview questions for Java Programmer !
+
+If you find wrong, you can fix it and pull request to this repository !
