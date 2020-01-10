@@ -40,7 +40,6 @@ jstatd -J-Djava.security.policy=jstatd.all.policy -J-Djava.rmi.server.hostname=1
 ## jstack
 
 
-
 ```bash
 jstack [-l] <pid>
     (to connect to running process)
