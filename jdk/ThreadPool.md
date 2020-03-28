@@ -25,3 +25,6 @@ Java 中除了可以通过上面的自定义线程池, 还可以 Executors 提�
 
 3. Executors.newSingleThreadExecutor()。 等于 Executors.newFixedThreadPool(1)
 核心和最大线程数都为 1, 存活时间永久, 队列为无限队列。 也就是整个线程池只有一个线程用来处理任务。 该线程池确保了在任意一个时刻只有一个任务会被执行。
+
+4. Executors.newScheduledThreadPool(int corePoolSize) 等同于 new ThreadPoolExecutor(corePoolSize, Integer.MAX_VALUE, 0L, TimeUnit.MILLISECONDS, new DelayedWorkQueue());
+核心数是 corePoolSize, 最大线程数为 Interger.MAX_VALUE, 线程存活时间 0，也就是永久存在， 工作队列 DelayedWorkQueue, 定时执行任务，当任务的执行时间到来时，ScheduedExecutor 就会真正启动一个线程，其余时间 ScheduledExecutor 都是在轮询任务的状态
